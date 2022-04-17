@@ -1,4 +1,14 @@
 from distutils.core import setup, Extension
+from sys import platform
+
+if platform == "linux" or platform == "linux2":
+       platform_define=[]
+elif platform == "darwin":
+       platform_define=[("MAC_OSX",None)]
+elif platform == "win32":
+       platform_define=[("WIN32",None),("_WIN32",None)]
+else:
+       platform_define=[]   
 
 gr_hash_module = Extension('gr_hash',
                                sources = ['gr_module.c',
@@ -45,8 +55,10 @@ gr_hash_module = Extension('gr_hash',
                                           'cryptonote/crypto/oaes_lib.c',
                                           'cryptonote/crypto/wild_keccak.cpp'],
                             include_dirs=['.', './sph', './cryptonote', 
-                                          './cryptonote/crypto'])
+                                          './cryptonote/crypto'],
+                            define_macros=platform_define)
 
 setup (name = 'gr_hash',
        version = '1.0',
-       ext_modules = [gr_hash_module])
+       ext_modules = [gr_hash_module],
+)

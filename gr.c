@@ -77,12 +77,42 @@ static void selectAlgo(unsigned char nibble, bool* selectedAlgos, uint8_t* selec
 	}
 }
 
-static void getAlgoString(void *mem, unsigned int size, uint8_t* selectedAlgoOutput, int algoCount) {
+static void getAlgoString(void *mem, unsigned int size, uint8_t* selectedAlgoOutput) {
   int i;
   unsigned char *p = (unsigned char *)mem;
   unsigned int len = size/2;
   unsigned char j = 0;
-  bool selectedAlgo[algoCount];
+  int algoCount = 15;
+  //bool selectedAlgo[algoCount];
+  bool selectedAlgo[15];
+  for(int z=0; z < algoCount; z++) {
+	  selectedAlgo[z] = false;
+  }
+  int selectedCount = 0;
+  for (i=0;i<len; i++) {
+	  selectAlgo(p[i], selectedAlgo, selectedAlgoOutput, algoCount, &selectedCount);
+	  if(selectedCount == algoCount) {
+		  break;
+	  }
+  }
+  if(selectedCount < algoCount) {
+	for(uint8_t i = 0; i < algoCount; i++) {
+		if(!selectedAlgo[i]) {
+			selectedAlgoOutput[selectedCount] = i;
+			selectedCount++;
+		}
+	}
+  }
+}
+
+static void getCNAlgoString(void *mem, unsigned int size, uint8_t* selectedAlgoOutput) {
+  int i;
+  unsigned char *p = (unsigned char *)mem;
+  unsigned int len = size/2;
+  unsigned char j = 0;
+  int algoCount = 6;
+  //bool selectedAlgo[algoCount];
+  bool selectedAlgo[6];
   for(int z=0; z < algoCount; z++) {
 	  selectedAlgo[z] = false;
   }
@@ -129,8 +159,8 @@ void gr_hash(const char* input, char* output, uint32_t len) {
 	int size = 80;
 	uint8_t selectedAlgoOutput[15] = {0};
 	uint8_t selectedCNAlgoOutput[6] = {0};
-	getAlgoString(&input[4], 64, selectedAlgoOutput, 15);
-	getAlgoString(&input[4], 64, selectedCNAlgoOutput, 6);
+	getAlgoString(&input[4], 64, selectedAlgoOutput);
+	getCNAlgoString(&input[4], 64, selectedCNAlgoOutput);
 	int i;
 	for (i = 0; i < 18; i++)
 	{
